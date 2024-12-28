@@ -1,4 +1,4 @@
-﻿namespace AutoInstall
+﻿namespace AsistenteOnePieceWorld
 {
     partial class Ajustes
     {

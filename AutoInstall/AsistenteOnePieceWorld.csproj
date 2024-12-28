@@ -6,10 +6,10 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Title>Asistente NoobKraft</Title>
-    <Description>El Asistente de NoobKraft es un programa el cual te ayudará a instalar los mods y configs necesarias para jugar al servidor.</Description>
-    <Copyright>Kristiansito</Copyright>
-    <PackageIcon>NoobKraft_.png</PackageIcon>
+    <Title>Asistente OnePieceWorld</Title>
+    <Description>El Asistente de OnePieceWorld es un programa el cual te ayudará a instalar los mods y configs necesarias para jugar al servidor.</Description>
+    <Copyright>LuminaKraft Studios</Copyright>
+    <PackageIcon>skull.ico</PackageIcon>
     <ApplicationIcon>skull.ico</ApplicationIcon>
   </PropertyGroup>
 

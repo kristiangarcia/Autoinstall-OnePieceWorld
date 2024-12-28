@@ -13,7 +13,7 @@ using static System.Windows.Forms.DataFormats;
 using System.Reflection.Emit;
 using System.Drawing.Drawing2D;
 
-namespace AutoInstall
+namespace AsistenteOnePieceWorld
 {
     public partial class Ajustes : Form
     {

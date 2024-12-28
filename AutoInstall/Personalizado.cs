@@ -11,7 +11,7 @@ using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
 
-namespace AutoInstall
+namespace AsistenteOnePieceWorld
 {
     public partial class Personalizado : Form
     {

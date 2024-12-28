@@ -17,7 +17,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using static System.Windows.Forms.Design.AxImporter;
 
-namespace AutoInstall
+namespace AsistenteOnePieceWorld
 {
     public partial class Principal : Form
     {
