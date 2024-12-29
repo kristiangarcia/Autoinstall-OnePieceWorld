@@ -426,6 +426,7 @@ namespace AsistenteOnePieceWorld
             File.WriteAllLines(configFile, lines);
 
             // Cambiar el valor de Quality Mode en dynamic_lights_reforged.toml
+            /*
             string dynamicLightsConfigFile = Path.Combine(selectedPath ?? string.Empty, "config", "dynamic_lights_reforged.toml");
             string[] dynamicLightsLines = File.ReadAllLines(dynamicLightsConfigFile);
 
@@ -439,7 +440,7 @@ namespace AsistenteOnePieceWorld
             }
 
             File.WriteAllLines(dynamicLightsConfigFile, dynamicLightsLines);
-
+            */
             SavePresetToFile(presetName);
             //}
             //catch (IOException)

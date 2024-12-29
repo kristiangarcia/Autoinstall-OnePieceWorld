@@ -28,17 +28,17 @@ namespace AsistenteOnePieceWorld
         public string? textoLabel4;
         //Program version
         private string program_version = ""; // versión actual del programa
-        private string program_pastebinUrl = "https://gist.github.com/Kristiansito/9c40f03bcbcce524e2fac36503524e9b/raw"; // URL de pastebin del programa
+        private string program_pastebinUrl = "https://gist.github.com/Kristiansito/a481d51852be77262cb439fcbad376bf/raw"; // URL de pastebin del programa
         private string programUpdateUrl = ""; // URL de descarga de actualización
         private string newProgramVersion = "";
 
         //Modpack version
         private string modpack_version = ""; // versión actual del modpack
-        private string modpack_pastebinUrl = "https://gist.github.com/Kristiansito/5d113c31c97f6a090c9c8f9f97ade2cf/raw"; // URL de pastebin del modpack
+        private string modpack_pastebinUrl = "https://gist.github.com/Kristiansito/916f88b84378d4ce62f67a7dc7baef41/raw"; // URL de pastebin del modpack
         private string modpackUpdateUrl = ""; // URL de descarga de actualización
         private string newModpackVersion = "";
 
-        //Forge libraries + AncientKraft version
+        //Forge libraries + OnePieceWorld version
         private string libraries_Url = "";
 
         //Distant Horizons (Optional)
@@ -65,7 +65,7 @@ namespace AsistenteOnePieceWorld
             InitializeProgressBar();
             animationTimer = new System.Windows.Forms.Timer();
 
-            FixDistant();
+            // FixDistant();
 
 
             // Crear el objeto ToolTip
@@ -91,7 +91,7 @@ namespace AsistenteOnePieceWorld
                 using (HttpClient client = new HttpClient())
                 {
                     // URL of the Gist containing the URLs
-                    string gistUrl = "https://gist.github.com/Kristiansito/2a21453761d7e2940de7883645fd15ef/raw";
+                    string gistUrl = "https://gist.github.com/Kristiansito/6072517cb19e49c7b867329549ebad09/raw";
 
                     // Download the gist content as a plain text
                     string gistContent = await client.GetStringAsync(gistUrl);
@@ -110,6 +110,7 @@ namespace AsistenteOnePieceWorld
                         // Handle the case where not enough URLs are provided
                         libraries_Url = "default_libraries_url";
                         distantHorizons_url = "default_distantHorizons_url";
+                        button1.Text = "AAAAAAAAAAAAAAAA";
                     }
                 }
             }
@@ -317,7 +318,7 @@ namespace AsistenteOnePieceWorld
                 MessageBox.Show("Ha ocurrido un error al comprobar las actualizaciones:\n" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
+        /*
         private void FixDistant()
         {
             // Nombre del directorio a buscar
@@ -352,6 +353,7 @@ namespace AsistenteOnePieceWorld
                 Console.WriteLine($"El directorio viejo no existe: {oldDirectoryPath}");
             }
         }
+        */
 
 
 
@@ -388,7 +390,7 @@ namespace AsistenteOnePieceWorld
                     string downloadsFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads";
 
                     // Crear el nombre del nuevo archivo
-                    string newProgramFileName = $"Asistente de AncientKraft v{newProgramVersion}.exe";
+                    string newProgramFileName = $"Asistente de OnePieceWorld v{newProgramVersion}.exe";
 
                     // Guardar el nuevo programa en la carpeta de Descargas
                     string newProgramFilePath = Path.Combine(downloadsFolderPath, newProgramFileName);
@@ -445,7 +447,7 @@ namespace AsistenteOnePieceWorld
             if (string.IsNullOrEmpty(selectedPath))
             {
                 // Si el usuario no ha seleccionado una ruta, usa la ruta predeterminada
-                selectedPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".minecraft", "_AncientKraft");
+                selectedPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".minecraft", "_OnePieceWorld");
             }
             if (!string.IsNullOrEmpty(selectedPath))
             {
@@ -573,10 +575,10 @@ namespace AsistenteOnePieceWorld
             timeLabel.BackColor = Color.Transparent; // Sin fondo
             Controls.Add(timeLabel);
 
-            // Crear carpeta _AncientKraft en caso de que la ruta sea por defecto
-            if (selectedPath == Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".minecraft", "_AncientKraft"))
+            // Crear carpeta _OnePieceWorld en caso de que la ruta sea por defecto
+            if (selectedPath == Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".minecraft", "_OnePieceWorld"))
             {
-                // Verificar si la carpeta _AncientKraft ya existe
+                // Verificar si la carpeta _OnePieceWorld ya existe
                 if (!Directory.Exists(selectedPath))
                 {
                     // Si no existe, crear la carpeta
@@ -893,29 +895,29 @@ namespace AsistenteOnePieceWorld
             var json = File.ReadAllText(perfilesPath);
             var jsonObj = JObject.Parse(json);
 
-            // Crear el nuevo objeto JSON para "AncientKraft"
+            // Crear el nuevo objeto JSON para "OnePieceWorld"
             var newProfile = new JObject
             {
                 ["created"] = "2024-03-08T20:18:06.251Z",
                 ["gameDir"] = @$"{selectedPath}",
-                ["icon"] = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABIElEQVRYR+2XsRHDIAxF7XlcuvBO9hqsYHZy4dIreI3kThfdgU4fhF2IIukCBL3/kQQZB+fP6Bx/eALwqUA37dm0+BfYDYACb9tWNGDfd543iTMtSpV7AGTKp2kqOnBdF81bnbA44AagJluMkRTO85w5cZ4nfV/XFTmkii054AZAgY/jUBXyIHIAzS/LolaH5kAfAHzWIQQiv+87c4TneRCdPa9L5jPR0IFuAGrK2IGaU48dcAPglpt0NBLb2geUfWw50A0A6v3yaGRVcG7U7gZYBeyAG4Bs6BIIOaAollvZcsATQMam1ozOGF19qO6LdoDN+gCQZYnuglrdP3bAE4Ch+YHCWSwfLHLc8txr+mPiDoAS/tW4yaZXESo//gN8Abal0iEPdkE5AAAAAElFTkSuQmCC",
+                ["icon"] = "data:image/jpeg;base64,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",
                 ["javaArgs"] = javaArgs,
-                ["lastUsed"] = "2024-03-08T20:31:10.859Z",
-                ["lastVersionId"] = "1.20.1-forge-47.3.0",
-                ["name"] = "AncientKraft",
+                ["lastUsed"] = "2024-12-28T23:59:22.977Z",
+                ["lastVersionId"] = "1.20.1-forge-47.3.12",
+                ["name"] = "OnePieceWorld",
                 ["type"] = "custom"
             };
 
             // Los perfiles están en una propiedad "profiles" en el JSON
             if (jsonObj["profiles"] is JObject profiles) // Usar 'is' para intentar el cast y verificar por null
             {
-                profiles["AncientKraft"] = newProfile; // Esto agregará el perfil "AncientKraft" justo debajo del último perfil existente
+                profiles["OnePieceWorld"] = newProfile; // Esto agregará el perfil "OnePieceWorld" justo debajo del último perfil existente
             }
             else
             {
                 // Si "profiles" no es un JObject o es null se inicializa 'profiles' y se agrega a 'jsonObj'
                 profiles = new JObject();
-                profiles["AncientKraft"] = newProfile;
+                profiles["OnePieceWorld"] = newProfile;
                 jsonObj["profiles"] = profiles; // Asegúrate de que 'jsonObj' contenga una propiedad "profiles"
             }
 
@@ -1082,7 +1084,7 @@ namespace AsistenteOnePieceWorld
                                 }
                             };
                             zip.ExtractAll(selectedPath, ExtractExistingFileAction.OverwriteSilently);
-                            FixDistant();
+                            // FixDistant();
                         }
 
                         // Eliminar el archivo ZIP después de la extracción
@@ -1170,7 +1172,7 @@ namespace AsistenteOnePieceWorld
                                             }
                                         };
                                         zip.ExtractAll(selectedPath, ExtractExistingFileAction.OverwriteSilently);
-                                        FixDistant();
+                                        // FixDistant();
                                     }
 
                                     // Eliminar el archivo ZIP después de la extracción
@@ -1207,7 +1209,7 @@ namespace AsistenteOnePieceWorld
             Cursor = Cursors.Default;
             button2.Text = "¡Listo! Modpack instalado correctamente!";
             button1.Text = "Finalizado";
-            MessageBox.Show("La instalación del modpack oficial de AncientKraft ha finalizado. Ahora ejecute su Launcher y seleccione el perfil AncientKraft", "Instalación Completada", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("La instalación del modpack oficial de OnePieceWorld ha finalizado. Ahora ejecute su Launcher y seleccione el perfil OnePieceWorld", "Instalación Completada", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
             // Remover los controles TextBox y enlace del formulario
             Controls.Remove(logTextBox);
@@ -1330,7 +1332,7 @@ namespace AsistenteOnePieceWorld
 
         private void pictureBox5_Click(object? sender, EventArgs e)
         {
-            selectedPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".minecraft", "_AncientKraft");
+            selectedPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".minecraft", "_OnePieceWorld");
             button2.Text = selectedPath;
             SaveCustomPath();
         }
@@ -1393,7 +1395,7 @@ namespace AsistenteOnePieceWorld
                 var jsonObj = JObject.Parse(json);
 
                 // La variable para almacenar el nombre del perfil a eliminar
-                string perfilNombre = "AncientKraft";
+                string perfilNombre = "OnePieceWorld";
                 bool perfilEliminado = false;
 
                 // Verificar si el JSON tiene la propiedad "profiles"
@@ -1421,14 +1423,14 @@ namespace AsistenteOnePieceWorld
 
 
 
-                // Construir la ruta hacia la carpeta "AncientKraft" dentro de "versions"
-                string AncientKraftPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".minecraft", "versions", "AncientKraft");
+                // Construir la ruta hacia la carpeta "OnePieceWorld" dentro de "versions"
+                string OnePieceWorldPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".minecraft", "versions", "OnePieceWorld");
 
                 // Verificar si la carpeta existe antes de intentar eliminarla
-                if (Directory.Exists(AncientKraftPath))
+                if (Directory.Exists(OnePieceWorldPath))
                 {
-                    // Eliminar la carpeta "AncientKraft" y todo su contenido
-                    Directory.Delete(AncientKraftPath, true);
+                    // Eliminar la carpeta "OnePieceWorld" y todo su contenido
+                    Directory.Delete(OnePieceWorldPath, true);
                 }
 
                 button2.Text = "¡Modpack Desinstalado correctamente!";

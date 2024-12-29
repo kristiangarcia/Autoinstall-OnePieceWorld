@@ -93,9 +93,9 @@ namespace AsistenteOnePieceWorld.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap AncientKraft_Background_Blur {
+        internal static System.Drawing.Bitmap discord {
             get {
-                object obj = ResourceManager.GetObject("AncientKraft Background_Blur", resourceCulture);
+                object obj = ResourceManager.GetObject("discord", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -103,9 +103,9 @@ namespace AsistenteOnePieceWorld.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap discord {
+        internal static System.Drawing.Bitmap Discord_Kristiansito_Nuevo {
             get {
-                object obj = ResourceManager.GetObject("discord", resourceCulture);
+                object obj = ResourceManager.GetObject("Discord_Kristiansito_Nuevo", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -166,6 +166,36 @@ namespace AsistenteOnePieceWorld.Properties {
         internal static System.Drawing.Bitmap Off_sq {
             get {
                 object obj = ResourceManager.GetObject("Off_sq", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap OnePieceWorld_Background {
+            get {
+                object obj = ResourceManager.GetObject("OnePieceWorld_Background", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap OnePieceWorld_Background_Blur {
+            get {
+                object obj = ResourceManager.GetObject("OnePieceWorld_Background_Blur", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap OnePieceWorld_Background_V {
+            get {
+                object obj = ResourceManager.GetObject("OnePieceWorld_Background_V", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

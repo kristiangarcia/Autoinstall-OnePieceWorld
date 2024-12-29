@@ -32,14 +32,12 @@
             button1 = new Button();
             pictureBox1 = new PictureBox();
             button2 = new Button();
-            pictureBox4 = new PictureBox();
             progressBarUI = new ProgressBar();
             pictureBox5 = new PictureBox();
             pictureBox6 = new PictureBox();
             button3 = new Button();
             label1 = new Label();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)pictureBox4).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox5).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox6).BeginInit();
             SuspendLayout();
@@ -55,7 +53,7 @@
             button1.FlatAppearance.MouseDownBackColor = Color.Transparent;
             button1.FlatAppearance.MouseOverBackColor = Color.Transparent;
             button1.FlatStyle = FlatStyle.Flat;
-            button1.Font = new Font("Minecraft", 15.75F, FontStyle.Bold, GraphicsUnit.Point);
+            button1.Font = new Font("Microsoft Sans Serif", 15.75F, FontStyle.Bold);
             button1.ForeColor = Color.White;
             button1.Location = new Point(308, 446);
             button1.Margin = new Padding(3, 2, 3, 2);
@@ -74,7 +72,7 @@
             pictureBox1.BackgroundImageLayout = ImageLayout.Stretch;
             pictureBox1.Cursor = Cursors.Hand;
             pictureBox1.Image = Properties.Resources.discord;
-            pictureBox1.Location = new Point(620, 6);
+            pictureBox1.Location = new Point(12, 82);
             pictureBox1.Margin = new Padding(3, 2, 3, 2);
             pictureBox1.Name = "pictureBox1";
             pictureBox1.Size = new Size(52, 56);
@@ -96,7 +94,7 @@
             button2.FlatAppearance.MouseDownBackColor = Color.Transparent;
             button2.FlatAppearance.MouseOverBackColor = Color.Transparent;
             button2.FlatStyle = FlatStyle.Flat;
-            button2.Font = new Font("Minecraft", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            button2.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold);
             button2.ForeColor = Color.White;
             button2.Location = new Point(633, 453);
             button2.Margin = new Padding(3, 2, 3, 2);
@@ -108,17 +106,6 @@
             button2.Click += button2_Click;
             button2.MouseEnter += button2_MouseEnter;
             button2.MouseLeave += button2_MouseLeave;
-            // 
-            // pictureBox4
-            // 
-            pictureBox4.BackColor = Color.Transparent;
-            pictureBox4.Image = Properties.Resources.Discord_Kristiansito_Rounded;
-            pictureBox4.Location = new Point(687, 6);
-            pictureBox4.Name = "pictureBox4";
-            pictureBox4.Size = new Size(350, 294);
-            pictureBox4.SizeMode = PictureBoxSizeMode.Zoom;
-            pictureBox4.TabIndex = 7;
-            pictureBox4.TabStop = false;
             // 
             // progressBarUI
             // 
@@ -169,7 +156,7 @@
             button3.FlatAppearance.MouseDownBackColor = Color.Transparent;
             button3.FlatAppearance.MouseOverBackColor = Color.Transparent;
             button3.FlatStyle = FlatStyle.Flat;
-            button3.Font = new Font("Minecraft", 15.75F, FontStyle.Bold, GraphicsUnit.Point);
+            button3.Font = new Font("Microsoft Sans Serif", 15.75F, FontStyle.Bold);
             button3.ForeColor = Color.White;
             button3.Location = new Point(68, 446);
             button3.Margin = new Padding(3, 2, 3, 2);
@@ -186,11 +173,11 @@
             // 
             label1.AutoSize = true;
             label1.BackColor = Color.Transparent;
-            label1.Font = new Font("Minecraft", 14.25F, FontStyle.Bold, GraphicsUnit.Point);
+            label1.Font = new Font("Microsoft Sans Serif", 14.25F, FontStyle.Bold);
             label1.ForeColor = Color.White;
             label1.Location = new Point(862, 518);
             label1.Name = "label1";
-            label1.Size = new Size(111, 19);
+            label1.Size = new Size(107, 24);
             label1.TabIndex = 14;
             label1.Text = "Modpack: ";
             label1.Visible = false;
@@ -201,7 +188,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             AutoSize = true;
             BackColor = Color.White;
-            BackgroundImage = Properties.Resources.AncientKraft_Background_Blur;
+            BackgroundImage = Properties.Resources.OnePieceWorld_Background_V;
             BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(1049, 546);
             Controls.Add(label1);
@@ -212,7 +199,6 @@
             Controls.Add(button2);
             Controls.Add(pictureBox1);
             Controls.Add(button1);
-            Controls.Add(pictureBox4);
             DoubleBuffered = true;
             ForeColor = Color.Black;
             FormBorderStyle = FormBorderStyle.FixedSingle;
@@ -222,10 +208,9 @@
             MinimizeBox = false;
             Name = "Principal";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Asistente de AncientKraft - Creado por Kristiansito (v1.6)";
+            Text = "Asistente OnePieceWorld - LuminaKraft Studios (v0.1)";
             TransparencyKey = SystemColors.ActiveBorder;
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
-            ((System.ComponentModel.ISupportInitialize)pictureBox4).EndInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox5).EndInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox6).EndInit();
             ResumeLayout(false);
@@ -237,7 +222,6 @@
         private Button button1;
         private PictureBox pictureBox1;
         private Button button2;
-        private PictureBox pictureBox4;
         private ProgressBar progressBarUI;
         private PictureBox pictureBox5;
         private PictureBox pictureBox6;
