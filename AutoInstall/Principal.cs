@@ -131,41 +131,25 @@ namespace AsistenteOnePieceWorld
                 ".minecraft"
             );
 
-            // Comprueba si la carpeta .minecraft existe
-            if (!Directory.Exists(minecraftPath))
-            {
-                // Muestra un MessageBox de error al usuario si la carpeta no existe
-                MessageBox.Show(
-                    "No se ha detectado la carpeta .minecraft. Por favor, instale Minecraft o inícielo al menos una vez.",
-                    "Error: Minecraft No Encontrado",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
-
-                // Cierra la aplicación después de que el usuario haga clic en "OK"
-                Application.Exit();
-
-                // Retorna una cadena vacía, aunque el proceso se cerrará antes de usarla
-                return string.Empty;
-            }
-
-            // Si la carpeta existe, comprueba si está el fichero launcher_profiles.json
+            // Construye la ruta del archivo launcher_profiles.json
             string launcherProfilesPath = Path.Combine(minecraftPath, "launcher_profiles.json");
 
-            if (!File.Exists(launcherProfilesPath))
+            // Comprueba si la carpeta .minecraft NO existe O el archivo launcher_profiles.json NO existe
+            if (!Directory.Exists(minecraftPath) || !File.Exists(launcherProfilesPath))
             {
-                // Muestra un MessageBox de error si el archivo launcher_profiles.json no existe
+                // Muestra un MessageBox de error al usuario
                 MessageBox.Show(
-                    "No se ha detectado el archivo launcher_profiles.json. Por favor, inicia Minecraft al menos una vez o revisa tu instalación.",
-                    "Error: Archivo No Encontrado",
+                    "La instalación de Minecraft no se ha detectado o está corrupta. " +
+                    "Por favor, reinstala Minecraft o inícialo al menos una vez para continuar.",
+                    "Problema con su instalación de Minecraft",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error
                 );
 
-                // Cierra la aplicación después de que el usuario haga clic en "OK"
-                Application.Exit();
+                // Cierra la aplicación de manera forzada al hacer clic en "OK"
+                Environment.Exit(0);
 
-                // Retorna una cadena vacía, aunque el proceso se cerrará antes de usarla
+                // Retorna una cadena vacía por formalidad
                 return string.Empty;
             }
 
