@@ -175,7 +175,7 @@
             label1.BackColor = Color.Transparent;
             label1.Font = new Font("Microsoft Sans Serif", 14.25F, FontStyle.Bold);
             label1.ForeColor = Color.White;
-            label1.Location = new Point(862, 518);
+            label1.Location = new Point(938, 518);
             label1.Name = "label1";
             label1.Size = new Size(107, 24);
             label1.TabIndex = 14;
@@ -208,7 +208,7 @@
             MinimizeBox = false;
             Name = "Principal";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Asistente OnePieceWorld - LuminaKraft Studios (v0.1)";
+            Text = "Asistente OnePieceWorld - LuminaKraft Studios (v0.2)";
             TransparencyKey = SystemColors.ActiveBorder;
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox5).EndInit();

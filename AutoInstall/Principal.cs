@@ -126,7 +126,10 @@ namespace AsistenteOnePieceWorld
         private string CheckMinecraftIsInstalled()
         {
             // Obtiene la ruta de la carpeta .minecraft
-            string minecraftPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".minecraft");
+            string minecraftPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                ".minecraft"
+            );
 
             // Comprueba si la carpeta .minecraft existe
             if (!Directory.Exists(minecraftPath))
@@ -146,9 +149,30 @@ namespace AsistenteOnePieceWorld
                 return string.Empty;
             }
 
-            // Si la carpeta existe, retorna la ruta
+            // Si la carpeta existe, comprueba si está el fichero launcher_profiles.json
+            string launcherProfilesPath = Path.Combine(minecraftPath, "launcher_profiles.json");
+
+            if (!File.Exists(launcherProfilesPath))
+            {
+                // Muestra un MessageBox de error si el archivo launcher_profiles.json no existe
+                MessageBox.Show(
+                    "No se ha detectado el archivo launcher_profiles.json. Por favor, inicia Minecraft al menos una vez o revisa tu instalación.",
+                    "Error: Archivo No Encontrado",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
+
+                // Cierra la aplicación después de que el usuario haga clic en "OK"
+                Application.Exit();
+
+                // Retorna una cadena vacía, aunque el proceso se cerrará antes de usarla
+                return string.Empty;
+            }
+
+            // Si la carpeta y el fichero existen, retorna la ruta
             return minecraftPath;
         }
+
 
 
         // Función para extraer los números de la versión
