@@ -10,11 +10,11 @@
     <Description>El Asistente de OnePieceWorld es un programa el cual te ayudará a instalar los mods y configs necesarias para jugar al servidor.</Description>
     <Copyright>LuminaKraft Studios</Copyright>
     <PackageIcon>skull.ico</PackageIcon>
-    <ApplicationIcon>skull.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\logo.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="skull.ico" />
+    <Content Include="Resources\logo.ico" />
   </ItemGroup>
 
   <ItemGroup>

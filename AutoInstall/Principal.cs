@@ -603,8 +603,8 @@ namespace AsistenteOnePieceWorld
                 DialogResult result = MessageBox.Show(
                     "¿Desea descargar Distant Horizons?\n\n" +
                     "Esta opción mejorará su experiencia permitiéndole ver más lejos en el juego.\n" +
-                    "Tenga en cuenta que descargará el mapa completo, lo que puede requerir más de 50 GB y podría tardar un tiempo considerable.\n\n" +
-                    "Nota: Esta descarga no es recomendable para PCs con bajos recursos.",
+                    "Tenga en cuenta que descargará el mapa completo, lo que puede requerir más de 3 GB y podría tardar un tiempo considerable.\n\n" +
+                    "Nota: Esta descarga no es recomendable para PCs de muy bajos recursos.",
                     "Descargar Distant Horizons (recomendado)",
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Question
@@ -1114,7 +1114,7 @@ namespace AsistenteOnePieceWorld
 
                     // Mostrar un MessageBox para esperar la confirmación del usuario
                     DialogResult result = MessageBox.Show(
-                        "Se ha abierto la página de descarga de Distant Horizons. Descargue el archivo ZIP y cuando termine pulse OK para seleccionarlo.",
+                        "Se ha abierto la página de descarga de Distant Horizons. Descargue el archivo ZIP y cuando termine pulse OK para continuar.",
                         "Esperando Confirmación",
                         MessageBoxButtons.OKCancel,
                         MessageBoxIcon.Information
@@ -1122,74 +1122,129 @@ namespace AsistenteOnePieceWorld
 
                     if (result == DialogResult.OK)
                     {
-                        button2.Text = "Esperando la selección del archivo ZIP...";
-                        // Asegurarse de que el cambio de texto se aplique antes de continuar
-                        await Task.Delay(500); // Esperar medio segundo para asegurar la actualización
-
-                        // Abrir el cuadro de diálogo para seleccionar el archivo ZIP descargado
-                        using (OpenFileDialog openFileDialog = new OpenFileDialog())
+                        // Comprobar nuevamente si el archivo se encuentra ahora en la carpeta de descargas
+                        if (File.Exists(distantFileToCheck))
                         {
-                            openFileDialog.Filter = "Archivos ZIP (*.zip)|*.zip";
-                            openFileDialog.Title = "Selecciona el archivo ZIP descargado";
+                            // El archivo ya se descargó en la carpeta de descargas, proceder con la extracción
+                            button2.Text = "Extrayendo Distant Horizons...";
+                            await Task.Delay(500); // Esperar medio segundo para asegurar la actualización
 
-                            if (openFileDialog.ShowDialog() == DialogResult.OK)
+                            try
                             {
-                                string zipFilePath = openFileDialog.FileName;
-
-                                button2.Text = "Extrayendo Distant Horizons...";
-                                // Asegurarse de que el cambio de texto se aplique antes de continuar
-                                await Task.Delay(500); // Esperar medio segundo para asegurar la actualización
-
-                                try
+                                using (ZipFile zip = ZipFile.Read(distantFileToCheck))
                                 {
-                                    using (ZipFile zip = ZipFile.Read(zipFilePath))
+                                    zip.ExtractProgress += (sender, e) =>
                                     {
-                                        zip.ExtractProgress += (sender, e) =>
+                                        if (e.EventType == ZipProgressEventType.Extracting_AfterExtractEntry)
                                         {
-                                            if (e.EventType == ZipProgressEventType.Extracting_AfterExtractEntry)
+                                            string message = $"Extrayendo Distant Horizons: {e.CurrentEntry.FileName}";
+                                            Invoke((MethodInvoker)(() =>
                                             {
-                                                string message = $"Extrayendo Distant Horizons: {e.CurrentEntry.FileName}";
+                                                logTextBox.AppendText(message + Environment.NewLine);
+                                                logTextBox.ScrollToCaret();
+                                            }));
+                                        }
+                                        else if (e.EventType == ZipProgressEventType.Extracting_EntryBytesWritten)
+                                        {
+                                            int progress = (int)(e.BytesTransferred * 100 / e.TotalBytesToTransfer);
+                                            Invoke((MethodInvoker)(() => progressBarUI.Value = progress));
+
+                                            if (logTextBox.Visible)
+                                            {
+                                                string message = $"Extrayendo Distant Horizons: {e.BytesTransferred} / {e.TotalBytesToTransfer} bytes";
                                                 Invoke((MethodInvoker)(() =>
                                                 {
                                                     logTextBox.AppendText(message + Environment.NewLine);
                                                     logTextBox.ScrollToCaret();
                                                 }));
                                             }
-                                            else if (e.EventType == ZipProgressEventType.Extracting_EntryBytesWritten)
-                                            {
-                                                int progress = (int)(e.BytesTransferred * 100 / e.TotalBytesToTransfer);
-                                                Invoke((MethodInvoker)(() => progressBarUI.Value = progress));
+                                        }
+                                    };
+                                    zip.ExtractAll(selectedPath, ExtractExistingFileAction.OverwriteSilently);
+                                    // FixDistant();
+                                }
 
-                                                if (logTextBox.Visible)
+                                // Eliminar el archivo ZIP después de la extracción
+                                File.Delete(distantFileToCheck);
+
+                                // Una vez completada la extracción, marcar distant.txt como "true"
+                                File.WriteAllText(distantFilePath, "true");
+                                MessageBox.Show("Distant Horizons se ha descargado e instalado correctamente.", "Instalación Completa", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show($"Error durante la extracción: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                        }
+                        else
+                        {
+                            // Si no se encuentra en la carpeta de descargas, abrir el cuadro de diálogo de selección
+                            button2.Text = "Esperando la selección del archivo ZIP...";
+                            await Task.Delay(500); // Esperar medio segundo para asegurar la actualización
+
+                            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+                            {
+                                openFileDialog.Filter = "Archivos ZIP (*.zip)|*.zip";
+                                openFileDialog.Title = "Selecciona el archivo ZIP descargado";
+
+                                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                                {
+                                    string zipFilePath = openFileDialog.FileName;
+
+                                    button2.Text = "Extrayendo Distant Horizons...";
+                                    await Task.Delay(500); // Esperar medio segundo para asegurar la actualización
+
+                                    try
+                                    {
+                                        using (ZipFile zip = ZipFile.Read(zipFilePath))
+                                        {
+                                            zip.ExtractProgress += (sender, e) =>
+                                            {
+                                                if (e.EventType == ZipProgressEventType.Extracting_AfterExtractEntry)
                                                 {
-                                                    string message = $"Extrayendo Distant Horizons: {e.BytesTransferred} / {e.TotalBytesToTransfer} bytes";
+                                                    string message = $"Extrayendo Distant Horizons: {e.CurrentEntry.FileName}";
                                                     Invoke((MethodInvoker)(() =>
                                                     {
                                                         logTextBox.AppendText(message + Environment.NewLine);
                                                         logTextBox.ScrollToCaret();
                                                     }));
                                                 }
-                                            }
-                                        };
-                                        zip.ExtractAll(selectedPath, ExtractExistingFileAction.OverwriteSilently);
-                                        // FixDistant();
+                                                else if (e.EventType == ZipProgressEventType.Extracting_EntryBytesWritten)
+                                                {
+                                                    int progress = (int)(e.BytesTransferred * 100 / e.TotalBytesToTransfer);
+                                                    Invoke((MethodInvoker)(() => progressBarUI.Value = progress));
+
+                                                    if (logTextBox.Visible)
+                                                    {
+                                                        string message = $"Extrayendo Distant Horizons: {e.BytesTransferred} / {e.TotalBytesToTransfer} bytes";
+                                                        Invoke((MethodInvoker)(() =>
+                                                        {
+                                                            logTextBox.AppendText(message + Environment.NewLine);
+                                                            logTextBox.ScrollToCaret();
+                                                        }));
+                                                    }
+                                                }
+                                            };
+                                            zip.ExtractAll(selectedPath, ExtractExistingFileAction.OverwriteSilently);
+                                            // FixDistant();
+                                        }
+
+                                        // Eliminar el archivo ZIP después de la extracción
+                                        File.Delete(zipFilePath);
+
+                                        // Una vez completada la extracción, marcar distant.txt como "true"
+                                        File.WriteAllText(distantFilePath, "true");
+                                        MessageBox.Show("Distant Horizons se ha descargado e instalado correctamente.", "Instalación Completa", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                     }
-
-                                    // Eliminar el archivo ZIP después de la extracción
-                                    File.Delete(zipFilePath);
-
-                                    // Una vez completada la extracción, marcar distant.txt como "true"
-                                    File.WriteAllText(distantFilePath, "true");
-                                    MessageBox.Show("Distant Horizons se ha descargado e instalado correctamente.", "Instalación Completa", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    catch (Exception ex)
+                                    {
+                                        MessageBox.Show($"Error durante la extracción: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    }
                                 }
-                                catch (Exception ex)
+                                else
                                 {
-                                    MessageBox.Show($"Error durante la extracción: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    MessageBox.Show("No se seleccionó ningún archivo. La instalación de Distant Horizons se ha cancelado.", "Cancelado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                                 }
-                            }
-                            else
-                            {
-                                MessageBox.Show("No se seleccionó ningún archivo. La instalación de Distant Horizons se ha cancelado.", "Cancelado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             }
                         }
                     }
@@ -1199,6 +1254,7 @@ namespace AsistenteOnePieceWorld
                     }
                 }
             }
+
 
 
             //////////////////////////////////
