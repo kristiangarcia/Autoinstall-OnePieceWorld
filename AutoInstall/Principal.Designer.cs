@@ -208,7 +208,7 @@
             MinimizeBox = false;
             Name = "Principal";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Asistente OnePieceWorld - LuminaKraft Studios (v0.2)";
+            Text = "Asistente OnePieceWorld - LuminaKraft Studios (v0.2.1)";
             TransparencyKey = SystemColors.ActiveBorder;
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox5).EndInit();
