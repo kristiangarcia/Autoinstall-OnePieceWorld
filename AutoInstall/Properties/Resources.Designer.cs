@@ -233,9 +233,29 @@ namespace AsistenteOnePieceWorld.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap widgets5 {
+            get {
+                object obj = ResourceManager.GetObject("widgets5", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap widgetss1 {
             get {
                 object obj = ResourceManager.GetObject("widgetss1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap widgetss5 {
+            get {
+                object obj = ResourceManager.GetObject("widgetss5", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

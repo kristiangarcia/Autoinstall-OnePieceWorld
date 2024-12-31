@@ -54,6 +54,7 @@ namespace AsistenteOnePieceWorld
         {
             InitializeComponent();
             CheckMinecraftIsInstalled();
+            CheckModpackInstalled();
             LoadCustomPath();
             // Obtener la versión actual del título de la ventana principal
             program_version = ObtenerVersion(this.Text);
@@ -157,6 +158,31 @@ namespace AsistenteOnePieceWorld
             return minecraftPath;
         }
 
+        private void CheckModpackInstalled()
+        {
+            // Ruta completa de installed.txt
+            string installedFilePath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                ".minecraft",
+                "installed.txt"
+            );
+
+            // Comprobar existencia y contenido del archivo
+            if (File.Exists(installedFilePath))
+            {
+                string fileContent = File.ReadAllText(installedFilePath).Trim();
+                if (fileContent.Equals("OK", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Mostrar el botón si todo está correcto
+                    button4.Visible = true;
+                    return;
+                }
+            }
+
+            // Si no se cumple, asegurar que el botón esté oculto
+            button4.Visible = false;
+        }
+
 
 
         // Función para extraer los números de la versión
@@ -244,7 +270,7 @@ namespace AsistenteOnePieceWorld
         private void CheckModpackIsInstalled()
         {
             // Especifica la ruta del archivo instalado.txt
-            string installedFilePath = Path.Combine(selectedPath, "installed.txt");
+            string installedFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".minecraft", "installed.txt");
 
             // Comprueba si el archivo existe
             if (File.Exists(installedFilePath))
@@ -905,7 +931,7 @@ namespace AsistenteOnePieceWorld
 
 
             // Guardar archivo "installed.txt"
-            string installedFilePath = Path.Combine(selectedPath, "installed.txt");
+            string installedFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".minecraft", "installed.txt");
             File.WriteAllText(installedFilePath, "OK");
 
             //Crear archivo preset.txt si no existe
@@ -1347,6 +1373,8 @@ namespace AsistenteOnePieceWorld
             // Abrir form Ajustes y pasar los valores actuales
             Ajustes form2 = new Ajustes(selectedPath, ajustesCheckBoxValue, ajustesTrackBar1Value, ajustesTrackBar2Value);
             form2.ShowDialog();
+
+            LaunchMinecraftIfExists();
         }
 
         private void CopyFilesIfNotExists(string sourceDir, string destDir)
@@ -1476,7 +1504,7 @@ namespace AsistenteOnePieceWorld
 
         private void pictureBox6_Click(object sender, EventArgs e)
         {
-            string installedFilePath = Path.Combine(selectedPath, "installed.txt");
+            string installedFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".minecraft", "installed.txt");
 
             if (File.Exists(installedFilePath) && File.ReadAllText(installedFilePath).Trim() == "OK")
             {
@@ -1505,12 +1533,18 @@ namespace AsistenteOnePieceWorld
 
         private void button3_Click(object sender, EventArgs e)
         {
-            DialogResult result = MessageBox.Show("Esto eliminará el modpack incluido todas sus configuraciones. ¿Seguro que quiere continuar?", "Advertencia", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            DialogResult result = MessageBox.Show(
+                "Esto eliminará el modpack incluido todas sus configuraciones. ¿Seguro que quiere continuar?",
+                "Advertencia",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning
+            );
 
             if (result == DialogResult.Yes)
             {
                 Cursor = Cursors.WaitCursor;
                 button2.Text = "Desinstalando Modpack...";
+
                 // Borrar carpeta del modpack de la ruta elegida por el usuario
                 if (Directory.Exists(selectedPath))
                 {
@@ -1519,7 +1553,11 @@ namespace AsistenteOnePieceWorld
                 }
 
                 // Leer el contenido existente del archivo JSON
-                string perfilesPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".minecraft", "launcher_profiles.json");
+                string perfilesPath = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                    ".minecraft",
+                    "launcher_profiles.json"
+                );
                 var json = File.ReadAllText(perfilesPath);
                 var jsonObj = JObject.Parse(json);
 
@@ -1550,10 +1588,13 @@ namespace AsistenteOnePieceWorld
                     File.WriteAllText(perfilesPath, jsonObj.ToString(Formatting.Indented));
                 }
 
-
-
                 // Construir la ruta hacia la carpeta "OnePieceWorld" dentro de "versions"
-                string OnePieceWorldPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".minecraft", "versions", "OnePieceWorld");
+                string OnePieceWorldPath = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                    ".minecraft",
+                    "versions",
+                    "OnePieceWorld"
+                );
 
                 // Verificar si la carpeta existe antes de intentar eliminarla
                 if (Directory.Exists(OnePieceWorldPath))
@@ -1562,6 +1603,31 @@ namespace AsistenteOnePieceWorld
                     Directory.Delete(OnePieceWorldPath, true);
                 }
 
+                // Eliminar el archivo installed.txt
+                string installedFilePath2 = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                    ".minecraft",
+                    "installed.txt"
+                );
+
+                if (File.Exists(installedFilePath2))
+                {
+                    File.Delete(installedFilePath2);
+                }
+
+                // Eliminar el archivo launcher.json
+                string installedFilePath3 = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                    ".minecraft",
+                    "launcher.json"
+                );
+
+                if (File.Exists(installedFilePath3))
+                {
+                    File.Delete(installedFilePath3);
+                }
+
+                CheckModpackInstalled();
                 button2.Text = "¡Modpack Desinstalado correctamente!";
                 button3.Text = "DESINSTALADO";
                 MessageBox.Show("Desinstalación completada con éxito", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -1585,5 +1651,249 @@ namespace AsistenteOnePieceWorld
             button3.BackgroundImage = Properties.Resources.half_widgets4;
         }
 
+        private void button4_MouseEnter(object? sender, EventArgs e)
+        {
+            button4.BackgroundImage = Properties.Resources.widgetss5;
+        }
+        private void button4_MouseLeave(object? sender, EventArgs e)
+        {
+            button4.BackgroundImage = Properties.Resources.widgets5;
+        }
+        private void button4_Click(object sender, EventArgs e)
+        {
+            LaunchMinecraftIfExists();
+        }
+
+
+
+        /// <summary>
+        /// Método principal que intenta iniciar Minecraft (Premium o No Premium).
+        /// Si logra iniciarlo, cierra la aplicación con Application.Exit().
+        /// </summary>
+        private void LaunchMinecraftIfExists()
+        {
+            // 1) Intentar leer la ruta personalizada desde launcher.json
+            string launcherJsonPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                ".minecraft",
+                "launcher.json"
+            );
+
+            string customPath = LoadCustomLauncherPath(launcherJsonPath);
+
+            // Si la ruta del JSON existe y el .exe está en disco, lo abrimos
+            if (!string.IsNullOrEmpty(customPath) && File.Exists(customPath))
+            {
+                try
+                {
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = customPath,
+                        UseShellExecute = true
+                    });
+
+                    // Cerrar la aplicación tras abrir el launcher
+                    Application.Exit();
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    // Si falla, seguimos con la rutina de búsqueda normal
+                    MessageBox.Show($"Error al iniciar el launcher personalizado:\n{ex.Message}",
+                        "Error al iniciar Launcher",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                }
+            }
+
+            // Rutas típicas para el Minecraft Launcher oficial (Premium)
+            string[] possibleLauncherPaths =
+            {
+                @"C:\XboxGames\Minecraft Launcher\Content\Minecraft.exe",
+                @"C:\Program Files (x86)\Minecraft Launcher\Minecraft.exe"
+            };
+
+            bool foundLauncher = false;
+
+            // 2) Intentar abrir Minecraft Launcher (Premium) en sus rutas típicas
+            foreach (string launcherPath in possibleLauncherPaths)
+            {
+                if (File.Exists(launcherPath))
+                {
+                    try
+                    {
+                        Process.Start(new ProcessStartInfo
+                        {
+                            FileName = launcherPath,
+                            UseShellExecute = true
+                        });
+
+                        foundLauncher = true;
+                        // Cerrar la aplicación tras abrir el launcher
+                        Application.Exit();
+                        return;
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Error al iniciar el Minecraft Launcher:\n{ex.Message}",
+                            "Error al iniciar Launcher",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+                    }
+                }
+            }
+
+            // 3) Si no se encontró el launcher Premium, buscar SKlauncher
+            if (!foundLauncher)
+            {
+                // Carpetas donde el usuario podría guardar SKlauncher
+                string[] commonFoldersForSklauncher =
+                {
+                    Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                    Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads")
+                };
+
+                bool foundSklauncher = false;
+                foreach (string folder in commonFoldersForSklauncher)
+                {
+                    if (!Directory.Exists(folder))
+                        continue;
+
+                    // Buscar .exe que contenga "SKlauncher" en su nombre
+                    string[] exeFiles = Directory.GetFiles(folder, "*.exe", SearchOption.AllDirectories);
+                    foreach (string exeFile in exeFiles)
+                    {
+                        if (Path.GetFileName(exeFile)
+                            .IndexOf("SKlauncher", StringComparison.OrdinalIgnoreCase) >= 0)
+                        {
+                            try
+                            {
+                                Process.Start(new ProcessStartInfo
+                                {
+                                    FileName = exeFile,
+                                    UseShellExecute = true
+                                });
+
+                                foundSklauncher = true;
+                                // Cerrar la aplicación tras abrir el launcher
+                                Application.Exit();
+                                return;
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show($"Error al iniciar SKlauncher:\n{ex.Message}",
+                                    "Error al iniciar Launcher",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Error);
+                            }
+                        }
+                    }
+
+                    if (foundSklauncher) break;
+                }
+
+                // 4) Si tampoco se encontró SKlauncher, le pedimos al usuario el .exe
+                if (!foundSklauncher)
+                {
+                    using (OpenFileDialog ofd = new OpenFileDialog())
+                    {
+                        ofd.Title = "Selecciona el ejecutable de tu Launcher de Minecraft (Premium o No Premium)";
+                        ofd.Filter = "Archivos EXE|*.exe|Todos los archivos|*.*";
+                        ofd.CheckFileExists = true;
+
+                        if (ofd.ShowDialog() == DialogResult.OK)
+                        {
+                            // Si el usuario seleccionó un archivo, intentamos iniciarlo
+                            try
+                            {
+                                Process.Start(new ProcessStartInfo
+                                {
+                                    FileName = ofd.FileName,
+                                    UseShellExecute = true
+                                });
+
+                                // Guardar la ruta en launcher.json para la próxima vez
+                                SaveCustomLauncherPath(launcherJsonPath, ofd.FileName);
+
+                                // Cerrar la aplicación tras abrir el launcher
+                                Application.Exit();
+                                return;
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show($"Error al iniciar el launcher seleccionado:\n{ex.Message}",
+                                    "Error al iniciar Launcher",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Error);
+                            }
+                        }
+                        else
+                        {
+                            // El usuario cerró el diálogo o no seleccionó nada
+                            MessageBox.Show(
+                                "No se encontró ninguna instalación de Minecraft ni SKlauncher.\n" +
+                                "Además, no se seleccionó ningún archivo .exe.",
+                                "Operación cancelada",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Warning
+                            );
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Clase que representa el contenido de launcher.json.
+        /// </summary>
+        private class CustomLauncherConfig
+        {
+            [JsonProperty("launcherPath")]
+            public string LauncherPath { get; set; }
+        }
+
+        /// <summary>
+        /// Lee el archivo launcher.json (si existe) y devuelve la ruta.
+        /// Si no existe o hay error, retorna cadena vacía.
+        /// </summary>
+        private string LoadCustomLauncherPath(string launcherJsonPath)
+        {
+            if (!File.Exists(launcherJsonPath))
+                return string.Empty;
+
+            try
+            {
+                string jsonContent = File.ReadAllText(launcherJsonPath);
+                var config = JsonConvert.DeserializeObject<CustomLauncherConfig>(jsonContent);
+                if (config != null && !string.IsNullOrEmpty(config.LauncherPath))
+                    return config.LauncherPath;
+            }
+            catch
+            {
+                // Ignorar errores y devolver cadena vacía
+            }
+
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// Guarda en launcher.json la ruta seleccionada por el usuario.
+        /// </summary>
+        private void SaveCustomLauncherPath(string launcherJsonPath, string path)
+        {
+            var config = new CustomLauncherConfig
+            {
+                LauncherPath = path
+            };
+
+            // Asegurar que exista la carpeta .minecraft
+            Directory.CreateDirectory(
+                Path.GetDirectoryName(launcherJsonPath) ?? ""
+            );
+
+            string json = JsonConvert.SerializeObject(config, Formatting.Indented);
+            File.WriteAllText(launcherJsonPath, json);
+        }
     }
 }

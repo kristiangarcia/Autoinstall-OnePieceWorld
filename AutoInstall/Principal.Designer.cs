@@ -37,6 +37,7 @@
             pictureBox6 = new PictureBox();
             button3 = new Button();
             label1 = new Label();
+            button4 = new Button();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox5).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox6).BeginInit();
@@ -182,6 +183,31 @@
             label1.Text = "Modpack: ";
             label1.Visible = false;
             // 
+            // button4
+            // 
+            button4.BackColor = Color.Transparent;
+            button4.BackgroundImage = Properties.Resources.widgets5;
+            button4.BackgroundImageLayout = ImageLayout.Zoom;
+            button4.Cursor = Cursors.Hand;
+            button4.FlatAppearance.BorderColor = Color.White;
+            button4.FlatAppearance.BorderSize = 0;
+            button4.FlatAppearance.MouseDownBackColor = Color.Transparent;
+            button4.FlatAppearance.MouseOverBackColor = Color.Transparent;
+            button4.FlatStyle = FlatStyle.Flat;
+            button4.Font = new Font("Microsoft Sans Serif", 15.75F, FontStyle.Bold);
+            button4.ForeColor = Color.White;
+            button4.Location = new Point(68, 389);
+            button4.Margin = new Padding(3, 2, 3, 2);
+            button4.Name = "button4";
+            button4.Size = new Size(474, 53);
+            button4.TabIndex = 15;
+            button4.Text = "JUGAR";
+            button4.UseVisualStyleBackColor = false;
+            button4.Visible = false;
+            button4.Click += button4_Click;
+            button4.MouseEnter += button4_MouseEnter;
+            button4.MouseLeave += button4_MouseLeave;
+            // 
             // Principal
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -191,6 +217,7 @@
             BackgroundImage = Properties.Resources.OnePieceWorld_Background_V;
             BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(1049, 546);
+            Controls.Add(button4);
             Controls.Add(label1);
             Controls.Add(button3);
             Controls.Add(pictureBox6);
@@ -227,5 +254,6 @@
         private PictureBox pictureBox6;
         private Button button3;
         private Label label1;
+        private Button button4;
     }
 }

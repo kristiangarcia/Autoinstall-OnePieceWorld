@@ -172,4 +172,10 @@
   <data name="OnePieceWorld_Background_V" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\OnePieceWorld_Background_V.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="widgets5" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\widgets5.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="widgetss5" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\widgetss5.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>
