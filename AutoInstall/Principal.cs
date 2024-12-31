@@ -1364,7 +1364,6 @@ namespace AsistenteOnePieceWorld
             Cursor = Cursors.Default;
             button2.Text = "¡Listo! Modpack instalado correctamente!";
             button1.Text = "Finalizado";
-            MessageBox.Show("La instalación del modpack oficial de OnePieceWorld ha finalizado. Ahora ejecute su Launcher y seleccione el perfil OnePieceWorld", "Instalación Completada", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
             // Remover los controles TextBox y enlace del formulario
             Controls.Remove(logTextBox);
@@ -1374,6 +1373,7 @@ namespace AsistenteOnePieceWorld
             Ajustes form2 = new Ajustes(selectedPath, ajustesCheckBoxValue, ajustesTrackBar1Value, ajustesTrackBar2Value);
             form2.ShowDialog();
 
+            MessageBox.Show("La instalación del modpack oficial de OnePieceWorld ha finalizado. Ahora ejecute su Launcher y seleccione el perfil OnePieceWorld", "Instalación Completada", MessageBoxButtons.OK, MessageBoxIcon.Information);
             LaunchMinecraftIfExists();
         }
 
