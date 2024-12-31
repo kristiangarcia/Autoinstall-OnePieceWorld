@@ -624,187 +624,252 @@ namespace AsistenteOnePieceWorld
             DateTime startTime; // Declarar startTime aquí
             DateTime lastUpdateTime = DateTime.Now; // Tiempo de la última actualización
 
-            button2.Text = "Descargando librerías...";
 
-            // Descargar archivo zip librerías de Dropbox
-            using (HttpClient client = new HttpClient())
-            using (HttpResponseMessage response = await client.GetAsync(libraries_Url, HttpCompletionOption.ResponseHeadersRead))
-            using (Stream streamToReadFrom = await response.Content.ReadAsStreamAsync())
+
+            // (1) Obtener la versión de Forge desde la URL (como antes)
+            string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(libraries_Url); // "librerias-47.3.22"
+            string[] parts = fileNameWithoutExtension.Split('-');
+            string forgeVersion = parts[parts.Length - 1]; // "47.3.22"
+
+            // (2) Construir la ruta de "versions"
+            string versionsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".minecraft", "versions");
+
+            // (3) Verificar si existe alguna carpeta que contenga "-forge-<version>"
+            bool forgeVersionExists = false;
+
+            // Solo si existe la carpeta versions
+            if (Directory.Exists(versionsFolder))
             {
-                string fileToWriteTo = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".minecraft", "librerias.zip");
-                using (Stream streamToWriteTo = File.Open(fileToWriteTo, FileMode.Create))
+                // Obtenemos TODAS las carpetas en "versions"
+                string[] subfolders = Directory.GetDirectories(versionsFolder);
+
+                // Si alguna termina o contiene la cadena "-forge-47.3.22", la damos por válida
+                // Puedes usar EndsWith o Contains según el formato que quieras
+                forgeVersionExists = subfolders.Any(folderPath =>
                 {
-                    byte[] buffer = new byte[8192];
-                    long totalBytes = response.Content.Headers.ContentLength ?? -1;
-                    long downloadedBytes = 0;
-                    startTime = DateTime.Now; // Tiempo de inicio
+                    string folderName = Path.GetFileName(folderPath);
+                    return folderName.Contains($"-forge-{forgeVersion}");
+                });
+            }
 
-                    while (true)
+            if (forgeVersionExists)
+            {
+                // Si se cumple, ya están instaladas las librerías
+                // ...
+            }
+            else
+            {
+                // -----------------------------------------------------------
+                //  SI NO EXISTE LA CARPETA, DESCARGAMOS Y EXTRAEMOS LIBRERÍAS
+                // -----------------------------------------------------------
+
+                button2.Text = "Descargando librerías...";
+
+                // Descargar archivo ZIP de librerías
+                using (HttpClient client = new HttpClient())
+                using (HttpResponseMessage response = await client.GetAsync(libraries_Url, HttpCompletionOption.ResponseHeadersRead))
+                using (Stream streamToReadFrom = await response.Content.ReadAsStreamAsync())
+                {
+                    // Ruta temporal donde guardar el ZIP de librerías
+                    string fileToWriteTo = Path.Combine(
+                        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                        ".minecraft",
+                        "librerias.zip"
+                    );
+
+                    using (Stream streamToWriteTo = File.Open(fileToWriteTo, FileMode.Create))
                     {
-                        int bytesRead = await streamToReadFrom.ReadAsync(buffer, 0, buffer.Length);
-                        if (bytesRead == 0)
+                        byte[] buffer = new byte[8192];
+                        long totalBytes = response.Content.Headers.ContentLength ?? -1;
+                        long downloadedBytes = 0;
+                        startTime = DateTime.Now; // Tiempo de inicio
+
+                        while (true)
                         {
-                            break;
-                        }
+                            int bytesRead = await streamToReadFrom.ReadAsync(buffer, 0, buffer.Length);
+                            if (bytesRead == 0) break;
 
-                        await streamToWriteTo.WriteAsync(buffer, 0, bytesRead);
-                        downloadedBytes += bytesRead;
+                            await streamToWriteTo.WriteAsync(buffer, 0, bytesRead);
+                            downloadedBytes += bytesRead;
 
-                        if (totalBytes > 0)
-                        {
-                            int progress = (int)(downloadedBytes * 100 / totalBytes);
-                            progressBarUI.Value = progress;
-
-                            // Actualizar cada segundo
-                            if (DateTime.Now - lastUpdateTime > TimeSpan.FromSeconds(2))
+                            if (totalBytes > 0)
                             {
-                                TimeSpan elapsedTime = DateTime.Now - startTime;
-                                double bytesPerSecond = downloadedBytes / elapsedTime.TotalSeconds;
-                                double bytesPerSecondInMB = bytesPerSecond / (1024 * 1024); // Convertir a MB/s
-                                double estimatedTimeRemaining = (totalBytes - downloadedBytes) / bytesPerSecond;
+                                int progress = (int)(downloadedBytes * 100 / totalBytes);
+                                progressBarUI.Value = progress;
 
-                                // Actualizar el Label con el tiempo restante
-                                timeLabel.Text = $"Tiempo restante: {TimeSpan.FromSeconds(estimatedTimeRemaining):hh\\:mm\\:ss}";
-
-                                // Actualizar el Label con la velocidad
-                                speedLabel.Text = $"{bytesPerSecondInMB:F2} MB/s";
-
-                                // Actualizar la ubicación de los Labels
-                                timeLabel.Location = new Point(progressBarUI.Left - timeLabel.Width - 10, progressBarUI.Top + progressBarUI.Height / 2 - timeLabel.Height / 2 - speedLabel.Height - 5);
-                                speedLabel.Location = new Point(progressBarUI.Left - speedLabel.Width - 10, progressBarUI.Top + progressBarUI.Height / 2 - speedLabel.Height / 2);
-
-                                lastUpdateTime = DateTime.Now; // Actualizar el tiempo de la última actualización
-                            }
-
-                            // Registrar el progreso en el TextBox (si está visible)
-                            if (logTextBox.Visible)
-                            {
-                                string message = $"Descargando: {downloadedBytes} / {totalBytes} bytes ({speedLabel.Text}, {timeLabel.Text})";
-                                Invoke((MethodInvoker)(() =>
+                                // Actualizar cada 2 segundos
+                                if (DateTime.Now - lastUpdateTime > TimeSpan.FromSeconds(2))
                                 {
-                                    logTextBox.AppendText(message + Environment.NewLine);
-                                    logTextBox.ScrollToCaret();
-                                }));
+                                    TimeSpan elapsedTime = DateTime.Now - startTime;
+                                    double bytesPerSecond = downloadedBytes / elapsedTime.TotalSeconds;
+                                    double bytesPerSecondInMB = bytesPerSecond / (1024 * 1024); // Convertir a MB/s
+                                    double estimatedTimeRemaining = (totalBytes - downloadedBytes) / bytesPerSecond;
+
+                                    // Actualizar el Label con el tiempo restante
+                                    timeLabel.Text = $"Tiempo restante: {TimeSpan.FromSeconds(estimatedTimeRemaining):hh\\:mm\\:ss}";
+                                    // Actualizar el Label con la velocidad
+                                    speedLabel.Text = $"{bytesPerSecondInMB:F2} MB/s";
+
+                                    // Ajustar posiciones (opcional)
+                                    timeLabel.Location = new Point(
+                                        progressBarUI.Left - timeLabel.Width - 10,
+                                        progressBarUI.Top + progressBarUI.Height / 2 - timeLabel.Height / 2 - speedLabel.Height - 5
+                                    );
+                                    speedLabel.Location = new Point(
+                                        progressBarUI.Left - speedLabel.Width - 10,
+                                        progressBarUI.Top + progressBarUI.Height / 2 - speedLabel.Height / 2
+                                    );
+
+                                    lastUpdateTime = DateTime.Now;
+                                }
+
+                                // Registrar el progreso en el TextBox (si está visible)
+                                if (logTextBox.Visible)
+                                {
+                                    string message = $"Descargando librerías: {downloadedBytes} / {totalBytes} bytes " +
+                                                     $"({speedLabel.Text}, {timeLabel.Text})";
+                                    Invoke((MethodInvoker)(() =>
+                                    {
+                                        logTextBox.AppendText(message + Environment.NewLine);
+                                        logTextBox.ScrollToCaret();
+                                    }));
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            button2.Text = "Descargando modpack (puede tardar un rato)...";
+                // Una vez descargadas, procedemos a extraerlas
+                button2.Text = "Extrayendo librerías...";
+                await Task.Delay(1500);
 
-            // Descargar archivo zip modpack de Dropbox
-            using (HttpClient client = new HttpClient())
-            using (HttpResponseMessage response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead))
-            using (Stream streamToReadFrom = await response.Content.ReadAsStreamAsync())
-            {
-                string fileToWriteTo = Path.Combine(selectedPath, "modpack.zip");
-                using (Stream streamToWriteTo = File.Open(fileToWriteTo, FileMode.Create))
+                string libreriasZipPath = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                    ".minecraft",
+                    "librerias.zip"
+                );
+
+                using (ZipFile zip = ZipFile.Read(libreriasZipPath))
                 {
-                    byte[] buffer = new byte[8192];
-                    long totalBytes = response.Content.Headers.ContentLength ?? -1;
-                    long downloadedBytes = 0;
-                    startTime = DateTime.Now; // Tiempo de inicio
-                    lastUpdateTime = DateTime.Now; // Tiempo de la última actualización
-
-                    while (true)
+                    zip.ExtractProgress += (sender, e) =>
                     {
-                        int bytesRead = await streamToReadFrom.ReadAsync(buffer, 0, buffer.Length);
-                        if (bytesRead == 0)
+                        if (e.EventType == ZipProgressEventType.Extracting_AfterExtractEntry)
                         {
-                            break;
-                        }
-
-                        await streamToWriteTo.WriteAsync(buffer, 0, bytesRead);
-                        downloadedBytes += bytesRead;
-
-                        if (totalBytes > 0)
-                        {
-                            int progress = (int)(downloadedBytes * 100 / totalBytes);
-                            progressBarUI.Value = progress;
-
-                            // Actualizar cada segundo
-                            if (DateTime.Now - lastUpdateTime > TimeSpan.FromSeconds(2))
-                            {
-                                TimeSpan elapsedTime = DateTime.Now - startTime;
-                                double bytesPerSecond = downloadedBytes / elapsedTime.TotalSeconds;
-                                double bytesPerSecondInMB = bytesPerSecond / (1024 * 1024); // Convertir a MB/s
-                                double estimatedTimeRemaining = (totalBytes - downloadedBytes) / bytesPerSecond;
-
-                                // Actualizar el Label con el tiempo restante
-                                timeLabel.Text = $"Tiempo restante: {TimeSpan.FromSeconds(estimatedTimeRemaining):hh\\:mm\\:ss}";
-
-                                // Actualizar el Label con la velocidad
-                                speedLabel.Text = $"{bytesPerSecondInMB:F2} MB/s";
-
-                                // Actualizar la ubicación de los Labels
-                                timeLabel.Location = new Point(progressBarUI.Left - timeLabel.Width - 10, progressBarUI.Top + progressBarUI.Height / 2 - timeLabel.Height / 2 - speedLabel.Height - 5);
-                                speedLabel.Location = new Point(progressBarUI.Left - speedLabel.Width - 10, progressBarUI.Top + progressBarUI.Height / 2 - speedLabel.Height / 2);
-
-                                lastUpdateTime = DateTime.Now; // Actualizar el tiempo de la última actualización
-                            }
-
-                            // Registrar el progreso en el TextBox (si está visible)
-                            if (logTextBox.Visible)
-                            {
-                                string message = $"Descargando: {downloadedBytes} / {totalBytes} bytes ({speedLabel.Text}, {timeLabel.Text})";
-                                Invoke((MethodInvoker)(() =>
-                                {
-                                    logTextBox.AppendText(message + Environment.NewLine);
-                                    logTextBox.ScrollToCaret();
-                                }));
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Desactivar la animación de "Descargando..."
-            animationTimer.Stop();
-
-            button1.Text = "Un segundo...";
-            button2.Text = "Extrayendo librerías...";
-            await Task.Delay(1500);
-
-            // Extraer archivo librerias.zip
-            using (ZipFile zip = ZipFile.Read(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".minecraft") + Path.DirectorySeparatorChar + "librerias.zip"))
-            {
-                zip.ExtractProgress += (sender, e) =>
-                {
-                    if (e.EventType == ZipProgressEventType.Extracting_AfterExtractEntry)
-                    {
-                        string message = $"Extrayendo: {e.CurrentEntry.FileName}";
-                        Invoke((MethodInvoker)(() =>
-                        {
-                            logTextBox.AppendText(message + Environment.NewLine);
-                            logTextBox.ScrollToCaret();
-                        }));
-                    }
-                    else if (e.EventType == ZipProgressEventType.Extracting_EntryBytesWritten)
-                    {
-                        int progress = (int)(e.BytesTransferred * 100 / e.TotalBytesToTransfer);
-                        Invoke((MethodInvoker)(() => progressBarUI.Value = progress));
-
-                        // Registrar el progreso en el TextBox (si está visible)
-                        if (logTextBox.Visible)
-                        {
-                            string message = $"Extrayendo: {e.BytesTransferred} / {e.TotalBytesToTransfer} bytes";
+                            string message = $"Extrayendo: {e.CurrentEntry.FileName}";
                             Invoke((MethodInvoker)(() =>
                             {
                                 logTextBox.AppendText(message + Environment.NewLine);
                                 logTextBox.ScrollToCaret();
                             }));
                         }
-                    }
-                };
+                        else if (e.EventType == ZipProgressEventType.Extracting_EntryBytesWritten)
+                        {
+                            int progress = (int)(e.BytesTransferred * 100 / e.TotalBytesToTransfer);
+                            Invoke((MethodInvoker)(() => progressBarUI.Value = progress));
 
-                await Task.Run(() => zip.ExtractAll(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".minecraft"), ExtractExistingFileAction.OverwriteSilently));
+                            if (logTextBox.Visible)
+                            {
+                                string message = $"Extrayendo: {e.BytesTransferred} / {e.TotalBytesToTransfer} bytes";
+                                Invoke((MethodInvoker)(() =>
+                                {
+                                    logTextBox.AppendText(message + Environment.NewLine);
+                                    logTextBox.ScrollToCaret();
+                                }));
+                            }
+                        }
+                    };
+
+                    // Extraer en la carpeta .minecraft
+                    await Task.Run(() =>
+                        zip.ExtractAll(
+                            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".minecraft"),
+                            ExtractExistingFileAction.OverwriteSilently
+                        )
+                    );
+                }
             }
 
-            button2.Text = "Extrayendo modpack...";
+            // ---------------------------------------------------
+            //          DESCARGA Y EXTRACCIÓN DEL MODPACK
+            // ---------------------------------------------------
 
-            // Extraer archivo modpack.zip
-            using (ZipFile zip = ZipFile.Read(selectedPath + Path.DirectorySeparatorChar + "modpack.zip"))
+            button2.Text = "Descargando modpack (puede tardar un rato)...";
+
+            // Descargar archivo zip del modpack
+            using (HttpClient client = new HttpClient())
+            using (HttpResponseMessage response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead))
+            using (Stream streamToReadFrom = await response.Content.ReadAsStreamAsync())
+            {
+                string fileToWriteTo = Path.Combine(selectedPath, "modpack.zip");
+
+                using (Stream streamToWriteTo = File.Open(fileToWriteTo, FileMode.Create))
+                {
+                    byte[] buffer = new byte[8192];
+                    long totalBytes = response.Content.Headers.ContentLength ?? -1;
+                    long downloadedBytes = 0;
+                    startTime = DateTime.Now;  // Tiempo de inicio
+                    lastUpdateTime = DateTime.Now; // Última actualización
+
+                    while (true)
+                    {
+                        int bytesRead = await streamToReadFrom.ReadAsync(buffer, 0, buffer.Length);
+                        if (bytesRead == 0) break;
+
+                        await streamToWriteTo.WriteAsync(buffer, 0, bytesRead);
+                        downloadedBytes += bytesRead;
+
+                        if (totalBytes > 0)
+                        {
+                            int progress = (int)(downloadedBytes * 100 / totalBytes);
+                            progressBarUI.Value = progress;
+
+                            // Actualizar cada 2 segundos
+                            if (DateTime.Now - lastUpdateTime > TimeSpan.FromSeconds(2))
+                            {
+                                TimeSpan elapsedTime = DateTime.Now - startTime;
+                                double bytesPerSecond = downloadedBytes / elapsedTime.TotalSeconds;
+                                double bytesPerSecondInMB = bytesPerSecond / (1024 * 1024);
+                                double estimatedTimeRemaining = (totalBytes - downloadedBytes) / bytesPerSecond;
+
+                                timeLabel.Text = $"Tiempo restante: {TimeSpan.FromSeconds(estimatedTimeRemaining):hh\\:mm\\:ss}";
+                                speedLabel.Text = $"{bytesPerSecondInMB:F2} MB/s";
+
+                                timeLabel.Location = new Point(
+                                    progressBarUI.Left - timeLabel.Width - 10,
+                                    progressBarUI.Top + progressBarUI.Height / 2 - timeLabel.Height / 2 - speedLabel.Height - 5
+                                );
+                                speedLabel.Location = new Point(
+                                    progressBarUI.Left - speedLabel.Width - 10,
+                                    progressBarUI.Top + progressBarUI.Height / 2 - speedLabel.Height / 2
+                                );
+
+                                lastUpdateTime = DateTime.Now;
+                            }
+
+                            if (logTextBox.Visible)
+                            {
+                                string message = $"Descargando modpack: {downloadedBytes} / {totalBytes} bytes " +
+                                                 $"({speedLabel.Text}, {timeLabel.Text})";
+                                Invoke((MethodInvoker)(() =>
+                                {
+                                    logTextBox.AppendText(message + Environment.NewLine);
+                                    logTextBox.ScrollToCaret();
+                                }));
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Desactivamos cualquier animación o timer de descarga
+            animationTimer.Stop();
+
+            button1.Text = "Un segundo...";
+            button2.Text = "Extrayendo modpack...";
+            await Task.Delay(1500);
+
+            // Extraer el archivo "modpack.zip" en la ruta seleccionada
+            using (ZipFile zip = ZipFile.Read(Path.Combine(selectedPath, "modpack.zip")))
             {
                 zip.ExtractProgress += (sender, e) =>
                 {
@@ -822,7 +887,6 @@ namespace AsistenteOnePieceWorld
                         int progress = (int)(e.BytesTransferred * 100 / e.TotalBytesToTransfer);
                         Invoke((MethodInvoker)(() => progressBarUI.Value = progress));
 
-                        // Registrar el progreso en el TextBox (si está visible)
                         if (logTextBox.Visible)
                         {
                             string message = $"Extrayendo: {e.BytesTransferred} / {e.TotalBytesToTransfer} bytes";
@@ -837,6 +901,7 @@ namespace AsistenteOnePieceWorld
 
                 await Task.Run(() => zip.ExtractAll(selectedPath, ExtractExistingFileAction.OverwriteSilently));
             }
+
 
 
             // Guardar archivo "installed.txt"
