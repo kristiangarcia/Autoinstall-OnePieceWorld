@@ -1666,10 +1666,6 @@ namespace AsistenteOnePieceWorld
 
 
 
-        /// <summary>
-        /// Método principal que intenta iniciar Minecraft (Premium o No Premium).
-        /// Si logra iniciarlo, cierra la aplicación con Application.Exit().
-        /// </summary>
         private void LaunchMinecraftIfExists()
         {
             // 1) Intentar leer la ruta personalizada desde launcher.json
@@ -1709,9 +1705,9 @@ namespace AsistenteOnePieceWorld
             // Rutas típicas para el Minecraft Launcher oficial (Premium)
             string[] possibleLauncherPaths =
             {
-                @"C:\XboxGames\Minecraft Launcher\Content\Minecraft.exe",
-                @"C:\Program Files (x86)\Minecraft Launcher\Minecraft.exe"
-            };
+        @"C:\XboxGames\Minecraft Launcher\Content\Minecraft.exe",
+        @"C:\Program Files (x86)\Minecraft Launcher\Minecraft.exe"
+    };
 
             bool foundLauncher = false;
 
@@ -1749,10 +1745,10 @@ namespace AsistenteOnePieceWorld
                 // Carpetas donde el usuario podría guardar SKlauncher
                 string[] commonFoldersForSklauncher =
                 {
-                    Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                    Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads")
-                };
+            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+            Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads")
+        };
 
                 bool foundSklauncher = false;
                 foreach (string folder in commonFoldersForSklauncher)
@@ -1760,34 +1756,49 @@ namespace AsistenteOnePieceWorld
                     if (!Directory.Exists(folder))
                         continue;
 
-                    // Buscar .exe que contenga "SKlauncher" en su nombre
-                    string[] exeFiles = Directory.GetFiles(folder, "*.exe", SearchOption.AllDirectories);
-                    foreach (string exeFile in exeFiles)
+                    // ENCERRAR la búsqueda en un try/catch para ignorar errores de acceso
+                    try
                     {
-                        if (Path.GetFileName(exeFile)
-                            .IndexOf("SKlauncher", StringComparison.OrdinalIgnoreCase) >= 0)
-                        {
-                            try
-                            {
-                                Process.Start(new ProcessStartInfo
-                                {
-                                    FileName = exeFile,
-                                    UseShellExecute = true
-                                });
+                        string[] exeFiles = Directory.GetFiles(folder, "*.exe", SearchOption.AllDirectories);
 
-                                foundSklauncher = true;
-                                // Cerrar la aplicación tras abrir el launcher
-                                Application.Exit();
-                                return;
-                            }
-                            catch (Exception ex)
+                        foreach (string exeFile in exeFiles)
+                        {
+                            // Buscar .exe que contenga "SKlauncher" en su nombre
+                            if (Path.GetFileName(exeFile)
+                                    .IndexOf("SKlauncher", StringComparison.OrdinalIgnoreCase) >= 0)
                             {
-                                MessageBox.Show($"Error al iniciar SKlauncher:\n{ex.Message}",
-                                    "Error al iniciar Launcher",
-                                    MessageBoxButtons.OK,
-                                    MessageBoxIcon.Error);
+                                try
+                                {
+                                    Process.Start(new ProcessStartInfo
+                                    {
+                                        FileName = exeFile,
+                                        UseShellExecute = true
+                                    });
+
+                                    foundSklauncher = true;
+                                    // Cerrar la aplicación tras abrir el launcher
+                                    Application.Exit();
+                                    return;
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show($"Error al iniciar SKlauncher:\n{ex.Message}",
+                                        "Error al iniciar Launcher",
+                                        MessageBoxButtons.OK,
+                                        MessageBoxIcon.Error);
+                                }
                             }
                         }
+                    }
+                    catch (UnauthorizedAccessException)
+                    {
+                        // No tenemos permisos para listar esta carpeta; la ignoramos y pasamos a la siguiente
+                        continue;
+                    }
+                    catch (IOException)
+                    {
+                        // Cualquier otro error de E/S que impida listar archivos; lo ignoramos también
+                        continue;
                     }
 
                     if (foundSklauncher) break;
